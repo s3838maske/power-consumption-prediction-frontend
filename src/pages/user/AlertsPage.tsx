@@ -123,7 +123,10 @@ const AlertsPage = () => {
                 required
               >
                 <option value="">Select device...</option>
-                {devices?.results?.map((d: any) => (
+                {(Array.isArray(devices)
+                  ? devices
+                  : devices?.results || []
+                )?.map((d: any) => (
                   <option key={d.id} value={d.id}>
                     {d.name}
                   </option>
@@ -167,69 +170,73 @@ const AlertsPage = () => {
           <div className="text-center p-8 text-muted-foreground">
             Loading alerts...
           </div>
-        ) : alerts?.results?.length === 0 ? (
+        ) : (Array.isArray(alerts) ? alerts : alerts?.results || [])?.length ===
+          0 ? (
           <div className="rounded-lg border border-dashed p-12 text-center text-muted-foreground">
             No alerts set. Create a threshold to monitor consumption.
           </div>
         ) : (
-          alerts?.results?.map((alert: any) => (
-            <div
-              key={alert.id}
-              className={`rounded-lg border bg-card p-4 shadow-card transition-colors ${
-                alert.is_triggered && alert.status !== "disabled"
-                  ? "border-destructive/30 bg-destructive/5"
-                  : "border-border"
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`rounded-lg p-2 ${alert.is_triggered && alert.status !== "disabled" ? "bg-destructive/15" : "bg-muted"}`}
-                  >
-                    {alert.is_triggered && alert.status !== "disabled" ? (
-                      <AlertTriangle className="h-4 w-4 text-destructive animate-pulse" />
-                    ) : (
-                      <Bell className="h-4 w-4 text-muted-foreground" />
-                    )}
+          (Array.isArray(alerts) ? alerts : alerts?.results || [])?.map(
+            (alert: any) => (
+              <div
+                key={alert.id}
+                className={`rounded-lg border bg-card p-4 shadow-card transition-colors ${
+                  alert.is_triggered && alert.status !== "disabled"
+                    ? "border-destructive/30 bg-destructive/5"
+                    : "border-border"
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`rounded-lg p-2 ${alert.is_triggered && alert.status !== "disabled" ? "bg-destructive/15" : "bg-muted"}`}
+                    >
+                      {alert.is_triggered && alert.status !== "disabled" ? (
+                        <AlertTriangle className="h-4 w-4 text-destructive animate-pulse" />
+                      ) : (
+                        <Bell className="h-4 w-4 text-muted-foreground" />
+                      )}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-foreground">
+                        {alert.device_name}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Threshold: {alert.threshold?.toLocaleString()} kWh ·
+                        Current: {alert.current_value?.toLocaleString() || 0}{" "}
+                        kWh
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-foreground">
-                      {alert.device_name}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Threshold: {alert.threshold?.toLocaleString()} kWh ·
-                      Current: {alert.current_value?.toLocaleString() || 0} kWh
-                    </p>
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize border ${
+                        alert.is_triggered && alert.status !== "disabled"
+                          ? statusStyles.triggered
+                          : statusStyles[
+                              alert.status as keyof typeof statusStyles
+                            ] || statusStyles.disabled
+                      }`}
+                    >
+                      {alert.is_triggered && alert.status !== "disabled"
+                        ? "High Usage"
+                        : alert.status}
+                    </span>
+                    <button
+                      onClick={() => {
+                        if (window.confirm("Delete this alert?")) {
+                          deleteMutation.mutate(alert.id);
+                        }
+                      }}
+                      className="rounded-lg p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
                   </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span
-                    className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize border ${
-                      alert.is_triggered && alert.status !== "disabled"
-                        ? statusStyles.triggered
-                        : statusStyles[
-                            alert.status as keyof typeof statusStyles
-                          ] || statusStyles.disabled
-                    }`}
-                  >
-                    {alert.is_triggered && alert.status !== "disabled"
-                      ? "High Usage"
-                      : alert.status}
-                  </span>
-                  <button
-                    onClick={() => {
-                      if (window.confirm("Delete this alert?")) {
-                        deleteMutation.mutate(alert.id);
-                      }
-                    }}
-                    className="rounded-lg p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </button>
                 </div>
               </div>
-            </div>
-          ))
+            ),
+          )
         )}
       </div>
     </div>

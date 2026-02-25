@@ -66,7 +66,7 @@ const UserDashboard = () => {
   });
 
   const activeAlerts =
-    alerts?.results?.filter(
+    (Array.isArray(alerts) ? alerts : alerts?.results || [])?.filter(
       (a: any) => a.is_triggered && a.status !== "disabled",
     ) || [];
 
