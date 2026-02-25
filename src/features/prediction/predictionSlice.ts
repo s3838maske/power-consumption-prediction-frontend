@@ -4,12 +4,13 @@ import { API } from "../../services/apiEndpoints";
 
 interface PredictionRecord {
   id: string;
-  device_id: string;
   device_name: string;
+  type: string;
   predicted_value: number;
   actual_value: number | null;
   mae: number | null;
   rmse: number | null;
+  target_date: string;
   created_at: string;
 }
 
@@ -54,7 +55,10 @@ const predictionSlice = createSlice({
       .addCase(generatePrediction.pending, (state) => { state.generating = true; })
       .addCase(generatePrediction.fulfilled, (state, action) => {
         state.generating = false;
-        state.predictions.unshift(action.payload);
+        // Backend returns { message, prediction: {...} }
+        if (action.payload.prediction) {
+          state.predictions.unshift(action.payload.prediction);
+        }
       })
       .addCase(generatePrediction.rejected, (state, action) => {
         state.generating = false;

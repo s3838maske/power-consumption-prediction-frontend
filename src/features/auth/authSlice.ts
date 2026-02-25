@@ -110,7 +110,14 @@ const authSlice = createSlice({
     };
     const handleRejected = (state: AuthState, action: any) => {
       state.loading = false;
-      state.error = action.payload as string;
+      const payload = action.payload;
+      if (typeof payload === 'object' && payload !== null) {
+        state.error = Object.entries(payload)
+          .map(([key, val]) => `${key}: ${Array.isArray(val) ? val.join(', ') : val}`)
+          .join(' | ');
+      } else {
+        state.error = payload as string || "An unexpected error occurred";
+      }
     };
 
     builder

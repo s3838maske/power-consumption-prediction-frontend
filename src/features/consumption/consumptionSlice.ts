@@ -4,11 +4,11 @@ import { API } from "../../services/apiEndpoints";
 
 interface ConsumptionRecord {
   id: string;
-  device_id: string;
   device_name: string;
-  value: number;
-  unit: string;
-  recorded_at: string;
+  category: string;
+  consumption: number; // kWh
+  date: string;
+  created_at: string;
 }
 
 interface ConsumptionState {
