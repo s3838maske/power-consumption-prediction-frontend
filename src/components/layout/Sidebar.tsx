@@ -10,7 +10,6 @@ import {
   FileText,
   Bell,
   Users,
-  Settings,
   LogOut,
   ChevronLeft,
   ChevronRight,
@@ -33,8 +32,6 @@ const adminNavItems = [
   { to: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { to: "/admin/users", icon: Users, label: "Users" },
   { to: "/admin/devices", icon: Cpu, label: "Devices" },
-  { to: "/admin/categories", icon: Settings, label: "Categories" },
-  { to: "/admin/logs", icon: FileText, label: "System Logs" },
 ];
 
 const Sidebar = () => {

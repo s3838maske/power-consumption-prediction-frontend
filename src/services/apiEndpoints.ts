@@ -46,9 +46,6 @@ export const API = {
   admin: {
     users: "/api/admin/users",
     activateUser: (id: string) => `/api/admin/users/${id}/activate`,
-    logs: "/api/admin/logs",
-    category: "/api/admin/category",
-    categoryById: (id: string) => `/api/admin/category/${id}`,
     product: "/api/admin/product",
   },
 };

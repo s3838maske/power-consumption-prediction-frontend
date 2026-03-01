@@ -21,8 +21,6 @@ import ReportsPage from "./pages/user/ReportsPage";
 import AlertsPage from "./pages/user/AlertsPage";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminUsersPage from "./pages/admin/AdminUsersPage";
-import AdminCategoriesPage from "./pages/admin/AdminCategoriesPage";
-import AdminLogsPage from "./pages/admin/AdminLogsPage";
 
 const queryClient = new QueryClient();
 
@@ -62,8 +60,6 @@ const App = () => (
               <Route path="dashboard" element={<AdminDashboard />} />
               <Route path="users" element={<AdminUsersPage />} />
               <Route path="devices" element={<DevicesPage />} />
-              <Route path="categories" element={<AdminCategoriesPage />} />
-              <Route path="logs" element={<AdminLogsPage />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />

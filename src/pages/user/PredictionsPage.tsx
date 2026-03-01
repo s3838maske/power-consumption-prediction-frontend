@@ -39,9 +39,9 @@ const PredictionsPage = () => {
     mutationFn: async () => {
       return await axiosInstance.post(API.prediction.generate);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["prediction-history"] });
-      queryClient.invalidateQueries({ queryKey: ["prediction-compare"] });
+    onSuccess: async () => {
+      await queryClient.refetchQueries({ queryKey: ["prediction-history"] });
+      await queryClient.refetchQueries({ queryKey: ["prediction-compare"] });
       toast.success("Predictions generated successfully");
     },
   });

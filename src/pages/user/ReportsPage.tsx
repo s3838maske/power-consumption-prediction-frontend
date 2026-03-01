@@ -20,19 +20,30 @@ const ReportsPage = () => {
     }
   });
 
-  const handleDownload = async (type: "excel" | "pdf") => {
+  const handleDownload = async (
+    format: "excel" | "pdf",
+    reportFilter?: "daily" | "weekly" | "monthly",
+    period?: string
+  ) => {
+    const reportType = reportFilter ?? filter;
     try {
-      toast.info(`Preparing your ${type.toUpperCase()} report...`);
-      const url = type === "excel" ? API.reports.downloadExcel : API.reports.downloadPdf;
-      const response = await axiosInstance.get(url, { responseType: 'blob' });
-      
-      const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
+      toast.info(period ? `Preparing ${period} report...` : `Preparing your ${format.toUpperCase()} report...`);
+      const baseUrl = format === "excel" ? API.reports.downloadExcel : API.reports.downloadPdf;
+      let url = `${baseUrl}?type=${reportType}`;
+      if (period) url += `&period=${encodeURIComponent(period)}`;
+      const response = await axiosInstance.get(url, { responseType: "blob" });
+      const blob = new Blob([response.data], {
+        type: format === "excel" ? "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" : "application/pdf",
+      });
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
       link.href = blobUrl;
-      link.setAttribute('download', `report-${filter}-${new Date().getTime()}.${type === "excel" ? "xlsx" : "pdf"}`);
+      const safePeriod = period ? period.replace(/\s+/g, "-").replace(/[^a-zA-Z0-9-]/g, "") : reportType;
+      link.setAttribute("download", `report-${safePeriod}-${Date.now()}.${format === "excel" ? "xlsx" : "pdf"}`);
       document.body.appendChild(link);
       link.click();
       link.remove();
+      window.URL.revokeObjectURL(blobUrl);
       toast.success("Download started");
     } catch (err) {
       toast.error("Failed to download report");
@@ -113,9 +124,22 @@ const ReportsPage = () => {
                       <td className="px-4 py-3 text-sm text-muted-foreground">{report.avg_daily?.toLocaleString() || (report.total_consumption / 30).toFixed(1)}</td>
                       <td className="px-4 py-3 text-sm text-warning font-medium">{report.peak?.toLocaleString() || 'N/A'}</td>
                       <td className="px-4 py-3">
-                        <button className="rounded-lg p-1.5 text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors">
-                          <Download className="h-4 w-4" />
-                        </button>
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => handleDownload("excel", filter, report.period || report.date || report.name)}
+                            className="rounded-lg p-1.5 text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors"
+                            title={`Download ${report.period || report.date || "report"} (Excel)`}
+                          >
+                            <Download className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDownload("pdf", filter, report.period || report.date || report.name)}
+                            className="rounded-lg p-1.5 text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors"
+                            title={`Download ${report.period || report.date || "report"} (PDF)`}
+                          >
+                            <Download className="h-4 w-4" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))

@@ -33,15 +33,7 @@ const AdminDashboard = () => {
     }
   });
 
-  const { data: logs, isLoading: logsLoading } = useQuery({
-    queryKey: ["admin-logs"],
-    queryFn: async () => {
-      const res = await axiosInstance.get(API.admin.logs);
-      return res.data;
-    }
-  });
-
-  if (summaryLoading || statsLoading || usersLoading || logsLoading) {
+  if (summaryLoading || statsLoading || usersLoading) {
     return <div className="flex h-96 items-center justify-center">Loading system status...</div>;
   }
 
@@ -128,30 +120,6 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* System Logs */}
-        <div className="rounded-lg border border-border bg-card shadow-card overflow-hidden">
-          <div className="border-b border-border px-4 py-3 flex items-center gap-2">
-            <Activity className="h-4 w-4 text-primary" />
-            <h3 className="text-sm font-semibold text-card-foreground">System Activity Logs</h3>
-          </div>
-          <div className="divide-y divide-border h-[300px] overflow-y-auto">
-            {logs?.map((log: any) => (
-              <div key={log.id} className="px-4 py-3 hover:bg-muted/30 transition-colors">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-medium text-foreground">{log.action}</p>
-                  <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium bg-primary/10 text-primary`}>
-                    info
-                  </span>
-                </div>
-                <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
-                  <span>{log.user}</span>
-                  <span>·</span>
-                  <span>{log.timestamp}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
     </div>
   );
